@@ -24,7 +24,7 @@ foreach (var arg in args)
                 case "-V":
                 case "-v":
                 case "-version":
-                    Console.WriteLine("dir-size version 0");
+                    Console.WriteLine("dir-size version 1");
                     return 0;
                 default:
                     Console.WriteLine("{0}: unknown option", arg);
@@ -48,7 +48,7 @@ foreach (var item in items)
     Console.WriteLine("{0}\t{1}", item.size, item.name);
 return 0;
 
-class Item
+class Item : IComparable<Item>
 {
     public readonly string name;
     public readonly long size;
@@ -60,6 +60,13 @@ class Item
             size = TotalSize(new DirectoryInfo(name));
         else
             size = new FileInfo(name).Length;
+    }
+
+    public int CompareTo(Item? other)
+    {
+        if (other == null)
+            return 1;
+        return size.CompareTo(other.size);
     }
 
     static long TotalSize(DirectoryInfo directory)
