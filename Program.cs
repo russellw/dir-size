@@ -14,12 +14,12 @@ foreach (var arg in args) {
 			case "-?":
 			case "-h":
 			case "-help":
-				Console.WriteLine("Usage: dir-size [files/directories]");
+				Console.WriteLine("Usage: dir-size path...");
 				return 0;
 			case "-V":
 			case "-v":
 			case "-version":
-				Console.WriteLine("dir-size version 1");
+				Console.WriteLine("dir-size 1.0");
 				return 0;
 			default:
 				Console.WriteLine("{0}: unknown option", arg);
