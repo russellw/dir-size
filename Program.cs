@@ -19,7 +19,7 @@ foreach (var arg in args) {
 			case "-V":
 			case "-v":
 			case "-version":
-				Console.WriteLine("dir-size 1.0");
+				Console.WriteLine("dir-size 1.1");
 				return 0;
 			default:
 				Console.WriteLine("{0}: unknown option", arg);
@@ -49,10 +49,13 @@ class Item: IComparable<Item> {
 
 	public Item(string name) {
 		this.name = name;
-		if (Directory.Exists(name))
-			size = TotalSize(new DirectoryInfo(name));
-		else
-			size = new FileInfo(name).Length;
+		try {
+			if (Directory.Exists(name))
+				size = TotalSize(new DirectoryInfo(name));
+			else
+				size = new FileInfo(name).Length;
+		} catch (UnauthorizedAccessException) {
+		}
 	}
 
 	public int CompareTo(Item? other) {
@@ -63,13 +66,15 @@ class Item: IComparable<Item> {
 
 	static long TotalSize(DirectoryInfo directory) {
 		long total = 0;
-		foreach (var entry in directory.EnumerateFileSystemInfos()) {
-			if (entry is DirectoryInfo d) {
-				total += TotalSize(d);
-				continue;
+		foreach (var entry in directory.EnumerateFileSystemInfos())
+			try {
+				if (entry is DirectoryInfo d) {
+					total += TotalSize(d);
+					continue;
+				}
+				total += ((FileInfo)entry).Length;
+			} catch (UnauthorizedAccessException) {
 			}
-			total += ((FileInfo)entry).Length;
-		}
 		return total;
 	}
 }
